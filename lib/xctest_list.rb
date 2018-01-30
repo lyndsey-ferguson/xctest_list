@@ -1,3 +1,5 @@
+require 'open3'
+require 'tempfile'
 
 # A class to parse xctest bundles and return a list of tests that
 # are in the bundle's binary.
@@ -33,10 +35,13 @@ class XCTestList
     objc_symbols_cmd << "'#{binary_path(xctest_bundle_path)}'"
 
     tests = []
-    system(objc_symbols_cmd).each_line do |line|
+    Open3.popen2e(objc_symbols_cmd) do |stdin, io, thread|
+      io.sync = true
+      io.each do |line|
       if / t -\[(?<testclass>\w+) (?<testmethod>test\w+)\]/ =~ line
         tests << "#{testclass}/#{testmethod}"
       end
+    end
     end
     tests
   end
@@ -48,10 +53,11 @@ class XCTestList
 
   # find the Swift symbols in the bundle's binary
   def self.swift_tests(xctest_bundle_path)
-    swift_symbols_cmd_output = system("nm -gU '#{binary_path(xctest_bundle_path)}'")
+    swift_symbols_command_output_tempfile = Tempfile.new(File.basename(xctest_bundle_path))
+    system("nm -gU '#{binary_path(xctest_bundle_path)}' > '#{swift_symbols_command_output_tempfile.path}'")
     tests = []
-    swift_symbols(swift_symbols_cmd_output).each_line do |symbol|
-      if /\w+\.(?<testclass>[^\.]+)\.(?<testmethod>test[^\(]+)/ =~ system("xcrun swift-demangle #{symbol}")
+    File.open(swift_symbols_command_output_tempfile.path, 'r').each do |line|
+      if /\w+\.(?<testclass>[^\.]+)\.(?<testmethod>test[^\(]+)/ =~ system("xcrun swift-demangle #{line}")
         tests << "#{testclass}/#{testmethod}"
       end
     end
