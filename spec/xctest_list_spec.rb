@@ -1,30 +1,28 @@
 require_relative '../lib/xctest_list'
 
 describe XCTestList do
-  describe 'WHEN given a binary with only Swift tests' do
-    before(:each) do
-      nm_swift_output = File.open('./spec/fixtures/nm_swift_output.txt').read
-      allow(XCTestList).to receive(:system).with(/nm -U '.*'/).and_return('')
-      allow(XCTestList).to receive(:system).with(/nm -gU '.*'/).and_return(nm_swift_output)
-      allow(XCTestList).to receive(:system).with(/^((?!nm -).*)/).and_call_original
-    end
+  before(:each) do
+    allow(XCTestList).to receive(:system).with(/nm -U '.*'/).and_return('')
+    allow(XCTestList).to receive(:system).with(/nm -gU '.*'/).and_return('')
+    allow(XCTestList).to receive(:system).with(/^((?!nm -).*)/).and_call_original
+    allow(File).to receive(:open).and_call_original
+    allow(File).to receive(:open).with(/.*xctestobjc.*/, 'r').and_return(File.open('./spec/fixtures/nm_objc_output.txt'))
+    allow(File).to receive(:open).with(/.*xctestswift.*/, 'r').and_return(File.open('./spec/fixtures/nm_swift_output.txt'))
+  end
 
+  describe 'WHEN given a binary with only Swift tests' do
     it 'THEN it returns only swift tests' do
+      allow(File).to receive(:open).with(/.*xctestobjc.*/, 'r').and_return(StringIO.new(''))
       parsed_tests = XCTestList.tests('./spec/fixtures/xctest_list.xctest')
       expect(parsed_tests).to eq(['SwiftTestsUITests/testExample'])
     end
   end
 
   describe 'WHEN given a binary with Objective-C & Swift tests' do
-    before(:each) do
-      nm_objc_output = File.open('./spec/fixtures/nm_objc_swift_output.txt').read
-      nm_swift_output = File.open('./spec/fixtures/nm_swift_output.txt').read
-      allow(XCTestList).to receive(:system).with(/nm -U '.*'/).and_return(nm_objc_output)
-      allow(XCTestList).to receive(:system).with(/nm -gU '.*'/).and_return(nm_swift_output)
-      allow(XCTestList).to receive(:system).with(/^((?!nm -).*)/).and_call_original
-    end
-
     it 'THEN it returns Objective-C & Swift tests' do
+      allow(File).to receive(:open).with(/.*xctestobjc.*/, 'r').and_return(File.open('./spec/fixtures/nm_objc_swift_output.txt'))
+      allow(File).to receive(:open).with(/.*xctestswift.*/, 'r').and_return(File.open('./spec/fixtures/nm_objc_swift_output.txt'))
+
       parsed_tests = XCTestList.tests('./spec/fixtures/xctest_list.xctest')
       expect(parsed_tests).to eq(
         [
@@ -37,14 +35,8 @@ describe XCTestList do
   end
 
   describe 'WHEN given a binary with only Objective-C' do
-    before(:each) do
-      nm_objc_output = File.open('./spec/fixtures/nm_objc_output.txt').read
-      allow(XCTestList).to receive(:system).with(/nm -U '.*'/).and_return(nm_objc_output)
-      allow(XCTestList).to receive(:system).with(/nm -gU '.*'/).and_return('')
-      allow(XCTestList).to receive(:system).with(/^((?!nm -).*)/).and_call_original
-    end
-
     it 'THEN it returns Objective-C' do
+      allow(File).to receive(:open).with(/.*xctestswift.*/, 'r').and_return(StringIO.new(''))
       parsed_tests = XCTestList.tests('./spec/fixtures/xctest_list.xctest')
       expect(parsed_tests).to eq(
         [

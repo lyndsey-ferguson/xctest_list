@@ -31,17 +31,14 @@ class XCTestList
 
   # find the Objective-C symbols in the bundle's binary
   def self.objc_tests(xctest_bundle_path)
-    objc_symbols_cmd = 'nm -U '
-    objc_symbols_cmd << "'#{binary_path(xctest_bundle_path)}'"
-
     tests = []
-    Open3.popen2e(objc_symbols_cmd) do |stdin, io, thread|
-      io.sync = true
-      io.each do |line|
+    objc_symbols_command_output_tempfile = Tempfile.new(File.basename(xctest_bundle_path) + "objc")
+    system("nm -U '#{binary_path(xctest_bundle_path)}' > '#{objc_symbols_command_output_tempfile.path}'")
+    tests = []
+    File.open(objc_symbols_command_output_tempfile.path, 'r').each do |line|
       if / t -\[(?<testclass>\w+) (?<testmethod>test\w+)\]/ =~ line
         tests << "#{testclass}/#{testmethod}"
       end
-    end
     end
     tests
   end
@@ -53,11 +50,11 @@ class XCTestList
 
   # find the Swift symbols in the bundle's binary
   def self.swift_tests(xctest_bundle_path)
-    swift_symbols_command_output_tempfile = Tempfile.new(File.basename(xctest_bundle_path))
+    swift_symbols_command_output_tempfile = Tempfile.new(File.basename(xctest_bundle_path) + "swift")
     system("nm -gU '#{binary_path(xctest_bundle_path)}' > '#{swift_symbols_command_output_tempfile.path}'")
     tests = []
     File.open(swift_symbols_command_output_tempfile.path, 'r').each do |line|
-      if /\w+\.(?<testclass>[^\.]+)\.(?<testmethod>test[^\(]+)/ =~ system("xcrun swift-demangle #{line}")
+      if /.*-\[.*\]/ !~ line && /\w+\.(?<testclass>[^\.]+)\.(?<testmethod>test[^\(]+)/ =~ system("xcrun swift-demangle #{line}")
         tests << "#{testclass}/#{testmethod}"
       end
     end
