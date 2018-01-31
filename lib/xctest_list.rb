@@ -35,7 +35,7 @@ class XCTestList
     objc_symbols_command_output_tempfile = Tempfile.new(File.basename(xctest_bundle_path) + "objc")
     system("nm -U '#{binary_path(xctest_bundle_path)}' > '#{objc_symbols_command_output_tempfile.path}'")
     tests = []
-    File.open(objc_symbols_command_output_tempfile.path, 'r').each do |line|
+    File.foreach(objc_symbols_command_output_tempfile.path) do |line|
       if / t -\[(?<testclass>\w+) (?<testmethod>test\w+)\]/ =~ line
         tests << "#{testclass}/#{testmethod}"
       end
@@ -53,7 +53,9 @@ class XCTestList
     swift_symbols_command_output_tempfile = Tempfile.new(File.basename(xctest_bundle_path) + "swift")
     system("nm -gU '#{binary_path(xctest_bundle_path)}' > '#{swift_symbols_command_output_tempfile.path}'")
     tests = []
-    File.open(swift_symbols_command_output_tempfile.path, 'r').each do |line|
+    File.foreach(swift_symbols_command_output_tempfile.path) do |line|
+      next unless /.*__\w+test\w*/ =~ line
+
       if /.*-\[.*\]/ !~ line && /\w+\.(?<testclass>[^\.]+)\.(?<testmethod>test[^\(]+)/ =~ system("xcrun swift-demangle #{line}")
         tests << "#{testclass}/#{testmethod}"
       end
