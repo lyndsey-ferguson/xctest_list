@@ -11,6 +11,9 @@ Lint/UselessAssignment:
   Exclude:
     - '**/spec/**/*'
 
+Style/FrozenStringLiteralComment:
+  Enabled: false
+  
 # We could potentially enable the 2 below:
 Layout/IndentHash:
   Enabled: false

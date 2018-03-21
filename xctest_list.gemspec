@@ -9,7 +9,6 @@ Gem::Specification.new do |s|
   s.files       = ['lib/xctest_list.rb']
   s.homepage    = 'https://github.com/lyndsey-ferguson/xctest_list'
   s.license     = 'MIT'
-  
+
   s.add_development_dependency 'colorize'
 end
-
