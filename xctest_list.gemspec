@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name        = 'xctest_list'
-  s.version     = '1.1.2'
+  s.version     = '1.1.3'
   s.date        = '2017-09-25'
   s.summary     = 'List the tests in the given xctest bundle'
   s.description = 'A gem to retrieve the tests in an iOS xctest bundle'
@@ -9,4 +9,7 @@ Gem::Specification.new do |s|
   s.files       = ['lib/xctest_list.rb']
   s.homepage    = 'https://github.com/lyndsey-ferguson/xctest_list'
   s.license     = 'MIT'
+  
+  s.add_development_dependency 'colorize'
 end
+
