@@ -54,11 +54,23 @@ describe XCTestList do
     end
   end
 
+  describe 'WHEN given a new style binary with only Objective-C' do
+    it 'THEN it returns Objective-C' do
+      allow(File).to receive(:foreach).with(/.*xctestswift.*/).and_yield('')
+      parsed_tests = XCTestList.tests('./spec/fixtures/new_xctest_list.xctest')
+      expect(parsed_tests).to eq(
+        [
+          'GemaUITests/testExample'
+        ]
+      )
+    end
+  end
+
   describe 'WHEN given an invalid xctest bundle' do
     it 'THEN it raises the correct exception' do
       expect { XCTestList.tests('./spec/fixtures/corrupt.xctest') }.to (
         raise_error(Exception) do |error|
-          expect(error.message).to match(%r{Missing xctest binary: '.*corrupt.xctest/corrupt'})
+          expect(error.message).to match(%r{Missing xctest binary: '.*corrupt.xctest/Contents/MacOS/corrupt'})
         end
       )
     end

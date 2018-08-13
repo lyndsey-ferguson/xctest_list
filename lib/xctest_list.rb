@@ -24,6 +24,10 @@ class XCTestList
     xctest_binary_name = File.basename(xctest_bundle_path, '.*')
     xctest_binary_path = File.join(xctest_bundle_path, xctest_binary_name)
     unless File.exist?(xctest_binary_path)
+      xctest_binary_path = File.join(xctest_bundle_path, 'Contents', 'MacOS', xctest_binary_name)
+    end
+
+    unless File.exist?(xctest_binary_path)
       raise "Missing xctest binary: '#{xctest_binary_path}'"
     end
     xctest_binary_path
