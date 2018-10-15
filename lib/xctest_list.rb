@@ -59,9 +59,7 @@ class XCTestList
     system("#{swift_symbol_dump_command}  > '#{swift_symbols_command_output_tempfile.path}'")
     tests = []
     File.foreach(swift_symbols_command_output_tempfile.path) do |line|
-      next unless /.*__\w+test\w*/ =~ line
-
-      if /.*-\[.*\]/ !~ line && /\w+\.(?<testclass>[^\.]+)\.(?<testmethod>test[^\(]+)\(/ =~ system("xcrun swift-demangle #{line}")
+      if /.*-\[.*\]/ !~ line && /\w+\.(?<testclass>[^\.]+)\.(?<testmethod>test[^\(]+)\(/ =~ line
         tests << "#{testclass}/#{testmethod}"
       end
     end

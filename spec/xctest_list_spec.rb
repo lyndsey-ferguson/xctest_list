@@ -1,9 +1,17 @@
 require_relative '../lib/xctest_list'
 
 def mock_foreach(filepath_pattern, file_fixture)
-  allow(File).to receive(:foreach).with(filepath_pattern) do |&block|
-    File.readlines(file_fixture).each do |line|
-      block.call(line)
+  if 'xctestswift'.match?(filepath_pattern)
+    demangled_output = `cat '#{file_fixture}' | grep -v \\\\-\\\\[ | cut -d' ' -f3 | xargs -s 131072 xcrun swift-demangle | cut -d' ' -f3 | grep -e '[\\.|_]'test`
+    demangled_output_lines = demangled_output.split("\n")
+    allow(File).to receive(:foreach).with(filepath_pattern) do |&block|
+      block.call(demangled_output_lines.shift)
+    end
+  else
+    allow(File).to receive(:foreach).with(filepath_pattern) do |&block|
+      File.readlines(file_fixture).each do |line|
+        block.call(line)
+      end
     end
   end
 end
@@ -101,12 +109,12 @@ describe XCTestList do
   describe 'real tests' do
     it 'finds swift 3 tests' do
       parsed_tests = XCTestList.tests('./spec/fixtures/Swift3/AtomicBoyUITests.xctest')
-      expect(parsed_tests).to eq(["AtomicBoyUITests/testExample2", "AtomicBoyUITests/testExample"])
+      expect(parsed_tests).to eq(["AtomicBoyUITests/testExample2", "AtomicBoyUITests/testExample", "SwiftAtomicBoyUITests/testExample"])
     end
 
     it 'finds swift 4 tests' do
       parsed_tests = XCTestList.tests('./spec/fixtures/Swift4.2/AtomicBoyUITests.xctest')
-      expect(parsed_tests).to eq(["AtomicBoyUITests/testExample2", "AtomicBoyUITests/testExample"])
+      expect(parsed_tests).to eq(["AtomicBoyUITests/testExample2", "AtomicBoyUITests/testExample", "SwiftAtomicBoyUITests/testExample"])
     end
   end
 end
