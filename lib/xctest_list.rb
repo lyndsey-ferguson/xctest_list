@@ -55,7 +55,8 @@ class XCTestList
   # find the Swift symbols in the bundle's binary
   def self.swift_tests(xctest_bundle_path)
     swift_symbols_command_output_tempfile = Tempfile.new(File.basename(xctest_bundle_path) + "swift")
-    system("nm -gU '#{binary_path(xctest_bundle_path)}' > '#{swift_symbols_command_output_tempfile.path}'")
+    swift_symbol_dump_command = "nm -gU '#{binary_path(xctest_bundle_path)}' | cut -d' ' -f3 | xargs -s 131072 xcrun swift-demangle | cut -d' ' -f3 | grep -e '[\\.|_]'test"
+    system("#{swift_symbol_dump_command}  > '#{swift_symbols_command_output_tempfile.path}'")
     tests = []
     File.foreach(swift_symbols_command_output_tempfile.path) do |line|
       next unless /.*__\w+test\w*/ =~ line
