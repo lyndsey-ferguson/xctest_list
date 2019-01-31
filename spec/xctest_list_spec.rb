@@ -107,6 +107,9 @@ describe XCTestList do
   end
 
   describe 'real tests' do
+    before(:each) do
+      allow(XCTestList).to receive(:`).and_call_original
+    end
     it 'finds swift 3 tests' do
       parsed_tests = XCTestList.tests('./spec/fixtures/Swift3/AtomicBoyUITests.xctest')
       expect(parsed_tests).to eq(["AtomicBoyUITests/testExample2", "AtomicBoyUITests/testExample", "SwiftAtomicBoyUITests/testExample"])
@@ -115,6 +118,12 @@ describe XCTestList do
     it 'finds swift 4 tests' do
       parsed_tests = XCTestList.tests('./spec/fixtures/Swift4.2/AtomicBoyUITests.xctest')
       expect(parsed_tests).to eq(["AtomicBoyUITests/testExample2", "AtomicBoyUITests/testExample", "SwiftAtomicBoyUITests/testExample"])
+    end
+
+    it 'finds swift tests in xcode 8', xcode8: true do
+      allow(XCTestList).to receive(:`).with('nm -version').and_return("Apple LLVM version 8.0.0 (clang-800.0.42.1)\n\tOptimized build.\n\tDefault target: x86_64-apple-darwin17.7.0\n\tHost CPU: skylake")
+      parsed_tests = XCTestList.tests('./spec/fixtures/xcode8.xctest')
+      expect(parsed_tests).to eq(["testAppUITests/testExample"])
     end
   end
 end
