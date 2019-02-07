@@ -30,6 +30,7 @@ class XCTestList
     unless File.exist?(xctest_binary_path)
       raise "Missing xctest binary: '#{xctest_binary_path}'"
     end
+
     xctest_binary_path
   end
 

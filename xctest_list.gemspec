@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name        = 'xctest_list'
-  s.version     = '1.1.6'
+  s.version     = '1.1.7'
   s.date        = '2018-08-15'
   s.summary     = 'List the tests in the given xctest bundle'
   s.description = 'A gem to retrieve the tests in an iOS xctest bundle'
