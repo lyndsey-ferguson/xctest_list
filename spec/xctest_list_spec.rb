@@ -57,7 +57,8 @@ describe XCTestList do
         parsed_tests = XCTestList.tests('./spec/fixtures/xctest_list.xctest')
         expect(parsed_tests).to eq(
           [
-            'GemaUITests/testExample'
+            'GemaUITests/testExample',
+            'GemaUITests/test'
           ]
         )
       end
@@ -69,7 +70,8 @@ describe XCTestList do
         parsed_tests = XCTestList.tests('./spec/fixtures/new_xctest_list.xctest')
         expect(parsed_tests).to eq(
           [
-            'GemaUITests/testExample'
+            'GemaUITests/testExample',
+            'GemaUITests/test'
           ]
         )
       end

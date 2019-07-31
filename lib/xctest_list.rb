@@ -41,7 +41,7 @@ class XCTestList
     system("nm -U '#{binary_path(xctest_bundle_path)}' > '#{objc_symbols_command_output_tempfile.path}'")
     tests = []
     File.foreach(objc_symbols_command_output_tempfile.path) do |line|
-      if / t -\[(?<testclass>\w+) (?<testmethod>test\w+)\]/ =~ line
+      if / t -\[(?<testclass>\w+) (?<testmethod>test\w*)\]/ =~ line
         tests << "#{testclass}/#{testmethod}"
       end
     end
@@ -68,7 +68,7 @@ class XCTestList
     system("#{swift_symbol_dump_command(binary_path(xctest_bundle_path))}  > '#{swift_symbols_command_output_tempfile.path}'")
     tests = []
     File.foreach(swift_symbols_command_output_tempfile.path) do |line|
-      if /.*-\[.*\]/ !~ line && /\w+\.(?<testclass>[^\.]+)\.(?<testmethod>test[^\(]+)\(/ =~ line
+      if /.*-\[.*\]/ !~ line && /\w+\.(?<testclass>[^\.]+)\.(?<testmethod>test[^\(]*)\(/ =~ line
         tests << "#{testclass}/#{testmethod}"
       end
     end

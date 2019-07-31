@@ -15,7 +15,7 @@ Style/FrozenStringLiteralComment:
   Enabled: false
   
 # We could potentially enable the 2 below:
-Layout/IndentHash:
+Layout/IndentFirstHashElement:
   Enabled: false
 
 Layout/AlignHash:
@@ -124,7 +124,7 @@ Lint/ParenthesesAsGroupedExpression:
 
 # This would reject is_ in front of methods
 # We use `is_supported?` everywhere already
-Style/PredicateName:
+Naming/PredicateName:
   Enabled: false
 
 # We allow the $
@@ -150,7 +150,7 @@ Style/IfInsideElse:
 Metrics/BlockLength:
   Enabled: false
 
-Style/FileName:
+Naming/FileName:
   Exclude:
     - '**/*.gemspec'
     - 'Gemfile'
