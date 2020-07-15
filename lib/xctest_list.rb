@@ -42,7 +42,7 @@ class XCTestList
     tests = []
     File.foreach(objc_symbols_command_output_tempfile.path) do |line|
       regex = / t -\[(?<testclass>\w+) (?<testmethod>#{test_prefix}\w*)\]/
-      if matches = regex.match(line)
+      if (matches = regex.match(line))
         tests << "#{matches[:testclass]}/#{matches[:testmethod]}"
       end
     end
@@ -70,7 +70,7 @@ class XCTestList
     tests = []
     File.foreach(swift_symbols_command_output_tempfile.path) do |line|
       regex = /\w+\.(?<testclass>[^\.]+)\.(?<testmethod>#{test_prefix}[^\(]*)\(/
-      if /.*-\[.*\]/ !~ line && matches = regex.match(line)
+      if /.*-\[.*\]/ !~ line && (matches = regex.match(line))
         tests << "#{matches[:testclass]}/#{matches[:testmethod]}"
       end
     end
