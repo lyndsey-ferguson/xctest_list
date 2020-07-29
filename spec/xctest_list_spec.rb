@@ -124,8 +124,8 @@ describe XCTestList do
 
     describe 'when given a special test prefix' do
       it 'finds swift 4 tests' do
-        parsed_tests = XCTestList.tests('./spec/fixtures/Swift4.2/AtomicBoyUITestsWithExtension.xctest', test_prefix: 'spec')
-        expect(parsed_tests).to eq(["AtomicBoyUITests/specExample2", "AtomicBoyUITests/specExample", "SwiftAtomicBoyUITests/specExample"])
+        parsed_tests = XCTestList.tests('./spec/fixtures/Swift4.2/AtomicBoyUITestsWithExtension.xctest', swift_test_prefix: 'spec')
+        expect(parsed_tests).to eq(["SwiftAtomicBoyUITests/specExample"])
       end
     end
 
